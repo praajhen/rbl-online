@@ -22,7 +22,7 @@ let totalTrials = 12;
 let phase = "instructions";
 
 let startTime;
-
+let responded = false;
 document.addEventListener("keydown", keyHandler);
 
 function keyHandler(e){
@@ -32,7 +32,8 @@ startPractice();
 return;
 }
 
-if(phase=="stimulus"){
+if(phase=="stimulus" && !responded){
+responded = true;
 handleResponse(e.key);
 }
 
@@ -50,7 +51,7 @@ function startEasy(){
 block="easy";
 trial=0;
 score=0;
-totalTrials=135;
+totalTrials=10;
 nextTrial();
 }
 
@@ -58,7 +59,7 @@ function startMedium(){
 block="medium";
 trial=0;
 score=0;
-totalTrials=180;
+totalTrials=10;
 nextTrial();
 }
 
@@ -66,7 +67,7 @@ function startHard(){
 block="hard";
 trial=0;
 score=0;
-totalTrials=180;
+totalTrials=10;
 nextTrial();
 }
 
@@ -85,7 +86,8 @@ document.getElementById("feedback").style.display="none";
 document.getElementById("stimulus").style.display="none";
 document.getElementById("fixation").style.display="block";
 
-setTimeout(showStim,750);
+let fixTime = (block=="practice") ? 1000 : 750;
+setTimeout(showStim, fixTime);
 }
 
 let currentStim;
@@ -104,9 +106,12 @@ correctButton = getCorrect(currentStim);
 
 phase="stimulus";
 
+responded = false;
+
 startTime = performance.now();
 
-setTimeout(noResponse,1200);
+let respTime = (block=="practice") ? 3000 : 1200;
+setTimeout(noResponse, respTime);
 }
 
 function getCorrect(idx){
@@ -136,7 +141,7 @@ phase="feedback";
 
 let rt = performance.now()-startTime;
 
-let resp = parseInt(key);
+let resp = (key=="1" || key=="2" || key=="3") ? parseInt(key) : 0;
 
 let acc = (resp==correctButton)?1:0;
 
@@ -150,14 +155,20 @@ if(acc==1) score++;
 saveTrial(resp,acc,rt);
 
 document.getElementById("stimulus").style.display="none";
-document.getElementById("feedback").style.display="block";
 
+setTimeout(()=>{
+
+document.getElementById("feedback").style.display="block";
 document.getElementById("feedback").innerText = acc?"Correct":"Incorrect";
+
+let fbTime = (block=="practice") ? 750 : 750;
 
 setTimeout(()=>{
 trial++;
 nextTrial();
-},750);
+}, fbTime);
+
+},250);
 
 }
 
