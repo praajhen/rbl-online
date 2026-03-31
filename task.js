@@ -207,11 +207,11 @@ function handleResponse(key){
 
 phase="feedback";
 
-let rt=performance.now()-startTime;
+let rt = performance.now()-startTime;
 
-let resp=(key=="1"||key=="2"||key=="3")?parseInt(key):0;
+let resp = (key=="1"||key=="2"||key=="3") ? parseInt(key) : 0;
 
-let acc=(resp==correctButton)?1:0;
+let acc = (resp==correctButton)?1:0;
 
 if(block=="hard"){
 let r=Math.random();
@@ -222,16 +222,35 @@ if(acc==1) score++;
 
 saveTrial(resp,acc,rt);
 
+// remove stimulus after response window
 document.getElementById("stimulus").style.display="none";
 
+
+// ---- pre-feedback gap (250 ms) ----
 setTimeout(()=>{
 
 document.getElementById("feedback").style.display="block";
-document.getElementById("feedback").innerText=acc?"Correct":"Incorrect";
+document.getElementById("feedback").innerText = acc?"Correct":"Incorrect";
+
+// ---- feedback duration (750 ms) ----
+setTimeout(()=>{
+
+document.getElementById("feedback").style.display="none";
+
+// ---- ISI ----
+let isi;
+
+if(block=="practice"){
+    isi = 0;
+}else{
+    isi = 600 + Math.random()*300;
+}
 
 setTimeout(()=>{
 trial++;
 nextTrial();
+}, isi);
+
 },750);
 
 },250);
@@ -246,8 +265,8 @@ handleResponse(0);
 function saveTrial(resp,acc,rt){
 
 let stimName=stimuli[currentStim].split("/")[1];
-let shape=stimName.split("*")[0];
-let color=stimName.split("*")[1].replace(".bmp","");
+let shape = stimName.split("_")[0];
+let color = stimName.split("_")[1].replace(".bmp","");
 
 data.push({
 participant:participant,
