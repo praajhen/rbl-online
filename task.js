@@ -111,7 +111,7 @@ responded = false;
 startTime = performance.now();
 
 let respTime = (block=="practice") ? 3000 : 1200;
-setTimeout(noResponse, respTime);
+responseTimer = setTimeout(noResponse, respTime);
 }
 
 function getCorrect(idx){
@@ -136,7 +136,7 @@ return 3;
 }
 
 function handleResponse(key){
-
+clearTimeout(responseTimer);
 phase="feedback";
 
 let rt = performance.now()-startTime;
