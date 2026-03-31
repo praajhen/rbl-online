@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Rule Based Learning</title>
+<style>
+body {
+background:black;
+color:white;
+font-family:Arial;
+text-align:center;
+}
+#stimulus {
+margin-top:150px;
+}
+</style>
+</head>
+
+<body>
+
+<div id="instructions">
+<h2>Rule Based Learning</h2>
+<p>You will see shapes and colors</p>
+<p>Press 1, 2 or 3</p>
+<p>Discover the rule</p>
+<p>Press SPACE to start</p>
+</div>
+
+<div id="fixation" style="display:none;font-size:40px;">+</div>
+
+<div id="stimulus" style="display:none">
+<img id="stimimg" width="300">
+</div>
+
+<div id="feedback" style="display:none;font-size:30px;"></div>
+
+<div id="score" style="display:none;font-size:30px;"></div>
+
+<script src="task.js"></script>
+<script src="save.js"></script>
+
+</body>
+</html>
