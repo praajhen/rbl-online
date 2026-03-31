@@ -92,7 +92,7 @@ function startPractice(){
 block="practice";
 trial=0;
 score=0;
-totalTrials=18;
+totalTrials=90;
 makeBlockOrder();
 makeStimOrder(totalTrials);
 nextTrial();
@@ -102,7 +102,7 @@ function startEasy(){
 block="easy";
 trial=0;
 score=0;
-totalTrials=18;
+totalTrials=117;
 makeStimOrder(totalTrials);
 nextTrial();
 }
@@ -111,7 +111,7 @@ function startMedium(){
 block="medium";
 trial=0;
 score=0;
-totalTrials=18;
+totalTrials=117;
 makeStimOrder(totalTrials);
 nextTrial();
 }
@@ -120,7 +120,7 @@ function startHard(){
 block="hard";
 trial=0;
 score=0;
-totalTrials=18;
+totalTrials=117;
 makeStimOrder(totalTrials);
 nextTrial();
 }
