@@ -17,7 +17,7 @@ let data = [];
 let block = "practice";
 let trial = 0;
 let score = 0;
-let totalTrials = 12;
+let totalTrials = 18;
 
 let phase = "instructions";
 
@@ -120,7 +120,7 @@ function startHard(){
 block="hard";
 trial=0;
 score=0;
-totalTrials=12;
+totalTrials=18;
 makeStimOrder(totalTrials);
 nextTrial();
 }
