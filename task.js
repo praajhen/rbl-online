@@ -23,6 +23,13 @@ let phase = "instructions";
 
 let startTime;
 let responded = false;
+
+let stimOrder = [];
+let stimIndex = 0;
+
+let blockOrder = [];
+let blockIndex = 0;
+
 document.addEventListener("keydown", keyHandler);
 
 function keyHandler(e){
@@ -39,11 +46,55 @@ handleResponse(e.key);
 
 }
 
+function makeStimOrder(nTrials){
+
+stimOrder=[];
+stimIndex=0;
+
+let reps=Math.floor(nTrials/9);
+let extra=nTrials%9;
+
+for(let r=0;r<reps;r++){
+for(let s=0;s<9;s++){
+stimOrder.push(s);
+}
+}
+
+for(let s=0;s<extra;s++){
+stimOrder.push(s);
+}
+
+for(let i=stimOrder.length-1;i>0;i--){
+let j=Math.floor(Math.random()*(i+1));
+[stimOrder[i],stimOrder[j]]=[stimOrder[j],stimOrder[i]];
+}
+
+}
+
+function makeBlockOrder(){
+
+let orders=[
+["easy","medium","hard"],
+["easy","hard","medium"],
+["medium","easy","hard"],
+["medium","hard","easy"],
+["hard","easy","medium"],
+["hard","medium","easy"]
+];
+
+let id=Math.floor(Math.random()*orders.length);
+blockOrder=orders[id];
+blockIndex=0;
+
+}
+
 function startPractice(){
 block="practice";
 trial=0;
 score=0;
 totalTrials=12;
+makeBlockOrder();
+makeStimOrder(totalTrials);
 nextTrial();
 }
 
@@ -51,7 +102,8 @@ function startEasy(){
 block="easy";
 trial=0;
 score=0;
-totalTrials=10;
+totalTrials=135;
+makeStimOrder(totalTrials);
 nextTrial();
 }
 
@@ -59,7 +111,8 @@ function startMedium(){
 block="medium";
 trial=0;
 score=0;
-totalTrials=10;
+totalTrials=180;
+makeStimOrder(totalTrials);
 nextTrial();
 }
 
@@ -67,8 +120,20 @@ function startHard(){
 block="hard";
 trial=0;
 score=0;
-totalTrials=10;
+totalTrials=180;
+makeStimOrder(totalTrials);
 nextTrial();
+}
+
+function startNextBlock(){
+
+let next=blockOrder[blockIndex];
+blockIndex++;
+
+if(next=="easy") startEasy();
+if(next=="medium") startMedium();
+if(next=="hard") startHard();
+
 }
 
 function nextTrial(){
@@ -86,8 +151,9 @@ document.getElementById("feedback").style.display="none";
 document.getElementById("stimulus").style.display="none";
 document.getElementById("fixation").style.display="block";
 
-let fixTime = (block=="practice") ? 1000 : 750;
-setTimeout(showStim, fixTime);
+let fixTime=(block=="practice")?1000:750;
+setTimeout(showStim,fixTime);
+
 }
 
 let currentStim;
@@ -98,20 +164,22 @@ function showStim(){
 document.getElementById("fixation").style.display="none";
 document.getElementById("stimulus").style.display="block";
 
-currentStim = Math.floor(Math.random()*9);
+currentStim=stimOrder[stimIndex];
+stimIndex++;
 
-document.getElementById("stimimg").src = stimuli[currentStim];
+document.getElementById("stimimg").src=stimuli[currentStim];
 
-correctButton = getCorrect(currentStim);
+correctButton=getCorrect(currentStim);
 
 phase="stimulus";
 
-responded = false;
+responded=false;
 
-startTime = performance.now();
+startTime=performance.now();
 
-let respTime = (block=="practice") ? 3000 : 1200;
-responseTimer = setTimeout(noResponse, respTime);
+let respTime=(block=="practice")?3000:1200;
+setTimeout(noResponse,respTime);
+
 }
 
 function getCorrect(idx){
@@ -136,14 +204,14 @@ return 3;
 }
 
 function handleResponse(key){
-clearTimeout(responseTimer);
+
 phase="feedback";
 
-let rt = performance.now()-startTime;
+let rt=performance.now()-startTime;
 
-let resp = (key=="1" || key=="2" || key=="3") ? parseInt(key) : 0;
+let resp=(key=="1"||key=="2"||key=="3")?parseInt(key):0;
 
-let acc = (resp==correctButton)?1:0;
+let acc=(resp==correctButton)?1:0;
 
 if(block=="hard"){
 let r=Math.random();
@@ -159,14 +227,12 @@ document.getElementById("stimulus").style.display="none";
 setTimeout(()=>{
 
 document.getElementById("feedback").style.display="block";
-document.getElementById("feedback").innerText = acc?"Correct":"Incorrect";
-
-let fbTime = (block=="practice") ? 750 : 750;
+document.getElementById("feedback").innerText=acc?"Correct":"Incorrect";
 
 setTimeout(()=>{
 trial++;
 nextTrial();
-}, fbTime);
+},750);
 
 },250);
 
@@ -179,9 +245,9 @@ handleResponse(0);
 
 function saveTrial(resp,acc,rt){
 
-let stimName = stimuli[currentStim].split("/")[1];
-let shape = stimName.split("_")[0];
-let color = stimName.split("_")[1].replace(".bmp","");
+let stimName=stimuli[currentStim].split("/")[1];
+let shape=stimName.split("*")[0];
+let color=stimName.split("*")[1].replace(".bmp","");
 
 data.push({
 participant:participant,
@@ -210,22 +276,27 @@ document.getElementById("fixation").style.display="none";
 
 document.getElementById("score").style.display="block";
 
-let acc = Math.round(score/totalTrials*100);
+let acc=Math.round(score/totalTrials*100);
 
-document.getElementById("score").innerHTML =
+document.getElementById("score").innerHTML=
 "Block finished<br><br>"+
 "Score: "+score+" / "+totalTrials+"<br>"+
 "Accuracy: "+acc+"%<br><br>"+
 "Press SPACE";
 
-document.onkeydown = function(e){
+document.onkeydown=function(e){
 
 if(e.code=="Space"){
 
-if(block=="practice") startEasy();
-else if(block=="easy") startMedium();
-else if(block=="medium") startHard();
-else endExperiment();
+if(block=="practice"){
+startNextBlock();
+}
+else if(blockIndex < blockOrder.length){
+startNextBlock();
+}
+else{
+endExperiment();
+}
 
 }
 
@@ -235,7 +306,7 @@ else endExperiment();
 
 function endExperiment(){
 
-document.getElementById("score").innerHTML =
+document.getElementById("score").innerHTML=
 "Finished<br><br>Saving data...";
 
 saveData(data);
