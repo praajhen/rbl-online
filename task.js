@@ -241,7 +241,7 @@ document.getElementById("feedback").style.display="none";
 let isi;
 
 if(block=="practice"){
-    isi = 0;
+    isi = 800;
 }else{
     isi = 600 + Math.random()*300;
 }
