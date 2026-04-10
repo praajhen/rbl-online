@@ -222,22 +222,17 @@ if(acc==1) score++;
 
 saveTrial(resp,acc,rt);
 
-// remove stimulus after response window
 document.getElementById("stimulus").style.display="none";
 
-
-// ---- pre-feedback gap (250 ms) ----
 setTimeout(()=>{
 
 document.getElementById("feedback").style.display="block";
 document.getElementById("feedback").innerText = acc?"Correct":"Incorrect";
 
-// ---- feedback duration (750 ms) ----
 setTimeout(()=>{
 
 document.getElementById("feedback").style.display="none";
 
-// ---- ISI ----
 let isi;
 
 if(block=="practice"){
@@ -283,11 +278,19 @@ feedback:acc,
 score:score
 });
 
+// ===== AUTO SAVE EVERY 5 TRIALS =====
+if(data.length % 5 === 0){
+saveData(data);
+}
+
 }
 
 function showScore(){
 
 phase="score";
+
+// ===== SAVE AT BLOCK END =====
+saveData(data);
 
 document.getElementById("feedback").style.display="none";
 document.getElementById("stimulus").style.display="none";
