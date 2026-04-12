@@ -2,20 +2,10 @@ const SAVE_URL = "https://script.google.com/macros/s/AKfycbxexZL8LKzHiJ1OxEEqiX-
 
 function saveData(data){
 
-// ensure always array (safe)
-if(!Array.isArray(data)){
-data = [data];
-}
-
 fetch(SAVE_URL,{
-method: "POST",
-headers: {
-"Content-Type": "application/json"
-},
-body: JSON.stringify(data)
-})
-.then(res => res.text())
-.then(msg => console.log("Saved:", msg))
-.catch(err => console.error("Save error:", err));
+method:"POST",
+mode:"no-cors",
+body:JSON.stringify(data)
+});
 
 }
