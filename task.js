@@ -1,6 +1,3 @@
-// ===== SAVE URL (needed for sendBeacon) =====
-const SAVE_URL = "https://script.google.com/macros/s/AKfycbxexZL8LKzHiJ1OxEEqiX-E3nn-4R2Zy3jLrA5M1sRlplAPhRtn5GzgD2cDfPil3xZm/exec";
-
 let participant = Date.now();
 
 let stimuli = [
@@ -19,12 +16,18 @@ let data = [];   // MUST be before beforeunload
 
 // ===== SAFE EXIT SAVE =====
 window.addEventListener("beforeunload", function () {
+
 if(data.length > 0){
+
+const url = "https://script.google.com/macros/s/AKfycbxexZL8LKzHiJ1OxEEqiX-E3nn-4R2Zy3jLrA5M1sRlplAPhRtn5GzgD2cDfPil3xZm/exec";
+
 navigator.sendBeacon(
-SAVE_URL,
+url,
 JSON.stringify([data[data.length-1]])
 );
+
 }
+
 });
 
 let block = "practice";
