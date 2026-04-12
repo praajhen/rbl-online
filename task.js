@@ -294,16 +294,9 @@ feedback:acc,
 score:score
 });
 
-// ===== SAFE SAVING =====
-
-// practice → save every trial
-if(block=="practice"){
-saveData([data[data.length-1]]);
-}
-
-// experiment → save every 5 trials
-else if(data.length % 5 === 0){
-saveData([data[data.length-1]]);
+// ===== BATCH SAVE =====
+if(data.length % 5 === 0){
+saveData(data.slice(-5));  // send last 5 trials
 }
 
 }
