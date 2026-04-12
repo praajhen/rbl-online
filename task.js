@@ -1,3 +1,6 @@
+// ===== SAVE URL (needed for sendBeacon) =====
+const SAVE_URL = "https://script.google.com/macros/s/AKfycbxexZL8LKzHiJ1OxEEqiX-E3nn-4R2Zy3jLrA5M1sRlplAPhRtn5GzgD2cDfPil3xZm/exec";
+
 let participant = Date.now();
 
 let stimuli = [
@@ -12,7 +15,17 @@ let stimuli = [
 "stimuli/triangle_blue.bmp"
 ];
 
-let data = [];
+let data = [];   // MUST be before beforeunload
+
+// ===== SAFE EXIT SAVE =====
+window.addEventListener("beforeunload", function () {
+if(data.length > 0){
+navigator.sendBeacon(
+SAVE_URL,
+JSON.stringify([data[data.length-1]])
+);
+}
+});
 
 let block = "practice";
 let trial = 0;
@@ -278,9 +291,16 @@ feedback:acc,
 score:score
 });
 
-// ===== AUTO SAVE EVERY 5 TRIALS =====
-if(data.length % 5 === 0){
-saveData(data);
+// ===== SAFE SAVING =====
+
+// practice → save every trial
+if(block=="practice"){
+saveData([data[data.length-1]]);
+}
+
+// experiment → save every 5 trials
+else if(data.length % 5 === 0){
+saveData([data[data.length-1]]);
 }
 
 }
@@ -289,7 +309,7 @@ function showScore(){
 
 phase="score";
 
-// ===== SAVE AT BLOCK END =====
+// save full block
 saveData(data);
 
 document.getElementById("feedback").style.display="none";

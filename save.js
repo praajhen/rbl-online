@@ -1,13 +1,21 @@
 const SAVE_URL = "https://script.google.com/macros/s/AKfycbxexZL8LKzHiJ1OxEEqiX-E3nn-4R2Zy3jLrA5M1sRlplAPhRtn5GzgD2cDfPil3xZm/exec";
 
 function saveData(data){
+
+// ensure always array (safe)
+if(!Array.isArray(data)){
+data = [data];
+}
+
 fetch(SAVE_URL,{
-method:"POST",
-headers:{
-"Content-Type":"application/json"
+method: "POST",
+headers: {
+"Content-Type": "application/json"
 },
-body:JSON.stringify(data)
+body: JSON.stringify(data)
 })
-.then(r=>console.log("saved"))
-.catch(e=>console.log(e))
+.then(res => res.text())
+.then(msg => console.log("Saved:", msg))
+.catch(err => console.error("Save error:", err));
+
 }
