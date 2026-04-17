@@ -1,25 +1,27 @@
 let participant = Date.now();
 
 let stimuli = [
-"stimuli/circle_red.bmp",
-"stimuli/circle_green.bmp",
-"stimuli/circle_blue.bmp",
-"stimuli/square_red.bmp",
-"stimuli/square_green.bmp",
-"stimuli/square_blue.bmp",
-"stimuli/triangle_red.bmp",
-"stimuli/triangle_green.bmp",
-"stimuli/triangle_blue.bmp"
+"stimuli/circle_red.bmp",       //0
+"stimuli/circle_green.bmp",     //1
+"stimuli/circle_blue.bmp",      //2
+"stimuli/square_red.bmp",       //3
+"stimuli/square_green.bmp",     //4
+"stimuli/square_blue.bmp",      //5
+"stimuli/triangle_red.bmp",     //6
+"stimuli/triangle_green.bmp",   //7
+"stimuli/triangle_blue.bmp"     //8
 ];
 
-let data = [];   // MUST be before beforeunload
+let data = [];
 
-// ===== SAFE EXIT SAVE =====
+/* ================= SAVE ON EXIT ================= */
+
 window.addEventListener("beforeunload", function () {
 
 if(data.length > 0){
 
-const url = "https://script.google.com/macros/s/AKfycbxexZL8LKzHiJ1OxEEqiX-E3nn-4R2Zy3jLrA5M1sRlplAPhRtn5GzgD2cDfPil3xZm/exec";
+const url =
+"https://script.google.com/macros/s/AKfycbxexZL8LKzHiJ1OxEEqiX-E3nn-4R2Zy3jLrA5M1sRlplAPhRtn5GzgD2cDfPil3xZm/exec";
 
 navigator.sendBeacon(
 url,
@@ -29,6 +31,8 @@ JSON.stringify([data[data.length-1]])
 }
 
 });
+
+/* ================= GLOBALS ================= */
 
 let block = "practice";
 let trial = 0;
@@ -46,6 +50,11 @@ let stimIndex = 0;
 let blockOrder = [];
 let blockIndex = 0;
 
+let currentStim = 0;
+let correctButton = 0;
+
+/* ================= KEYBOARD ================= */
+
 document.addEventListener("keydown", keyHandler);
 
 function keyHandler(e){
@@ -58,18 +67,27 @@ return;
 if(phase=="stimulus" && !responded){
 responded = true;
 handleResponse(e.key);
+return;
+}
+
+if(phase=="score" && e.code=="Space"){
+continueFlow();
+return;
 }
 
 }
+
+/* ================= ORDERS ================= */
 
 function makeStimOrder(nTrials){
 
-stimOrder=[];
-stimIndex=0;
+stimOrder = [];
+stimIndex = 0;
 
-let reps=Math.floor(nTrials/9);
-let extra=nTrials%9;
+let reps = Math.floor(nTrials/9);
+let extra = nTrials % 9;
 
+/* balanced repetitions */
 for(let r=0;r<reps;r++){
 for(let s=0;s<9;s++){
 stimOrder.push(s);
@@ -80,16 +98,39 @@ for(let s=0;s<extra;s++){
 stimOrder.push(s);
 }
 
+/* shuffle */
 for(let i=stimOrder.length-1;i>0;i--){
 let j=Math.floor(Math.random()*(i+1));
 [stimOrder[i],stimOrder[j]]=[stimOrder[j],stimOrder[i]];
+}
+
+/* remove immediate repeats */
+for(let i=1;i<stimOrder.length;i++){
+
+if(stimOrder[i]===stimOrder[i-1]){
+
+for(let j=i+1;j<stimOrder.length;j++){
+
+if(
+stimOrder[j]!==stimOrder[i] &&
+stimOrder[j]!==stimOrder[i-1]
+){
+[stimOrder[i],stimOrder[j]] =
+[stimOrder[j],stimOrder[i]];
+break;
+}
+
+}
+
+}
+
 }
 
 }
 
 function makeBlockOrder(){
 
-let orders=[
+let orders = [
 ["easy","medium","hard"],
 ["easy","hard","medium"],
 ["medium","easy","hard"],
@@ -98,52 +139,66 @@ let orders=[
 ["hard","medium","easy"]
 ];
 
-let id=Math.floor(Math.random()*orders.length);
-blockOrder=orders[id];
-blockIndex=0;
+blockOrder = orders[Math.floor(Math.random()*orders.length)];
+blockIndex = 0;
 
 }
 
+/* ================= START BLOCKS ================= */
+
 function startPractice(){
-block="practice";
-trial=0;
-score=0;
-totalTrials=18;
+
+block = "practice";
+trial = 0;
+score = 0;
+totalTrials = 18;
+
 makeBlockOrder();
 makeStimOrder(totalTrials);
+
 nextTrial();
+
 }
 
 function startEasy(){
-block="easy";
-trial=0;
-score=0;
-totalTrials=90;
+
+block = "easy";
+trial = 0;
+score = 0;
+totalTrials = 135;
+
 makeStimOrder(totalTrials);
 nextTrial();
+
 }
 
 function startMedium(){
-block="medium";
-trial=0;
-score=0;
-totalTrials=117;
+
+block = "medium";
+trial = 0;
+score = 0;
+totalTrials = 243;
+
 makeStimOrder(totalTrials);
 nextTrial();
+
 }
 
 function startHard(){
-block="hard";
-trial=0;
-score=0;
-totalTrials=117;
+
+block = "hard";
+trial = 0;
+score = 0;
+totalTrials = 243;
+
 makeStimOrder(totalTrials);
 nextTrial();
+
 }
 
 function startNextBlock(){
 
-let next=blockOrder[blockIndex];
+let next = blockOrder[blockIndex];
 blockIndex++;
 
 if(next=="easy") startEasy();
@@ -152,114 +207,169 @@ if(next=="hard") startHard();
 
 }
 
+/* ================= FLOW ================= */
+
+function continueFlow(){
+
+if(block=="practice"){
+startNextBlock();
+return;
+}
+
+if(blockIndex < blockOrder.length){
+startNextBlock();
+return;
+}
+
+endExperiment();
+
+}
+
+/* ================= TRIAL ================= */
+
 function nextTrial(){
 
-if(trial>=totalTrials){
+if(trial >= totalTrials){
 showScore();
 return;
 }
 
-phase="fixation";
+phase = "fixation";
 
-document.getElementById("instructions").style.display="none";
-document.getElementById("score").style.display="none";
-document.getElementById("feedback").style.display="none";
-document.getElementById("stimulus").style.display="none";
+hideAll();
 document.getElementById("fixation").style.display="block";
 
-let fixTime=(block=="practice")?1000:750;
-setTimeout(showStim,fixTime);
+let fixTime = (block=="practice") ? 1000 : 750;
+
+setTimeout(showStimulus, fixTime);
 
 }
 
-let currentStim;
-let correctButton;
+function showStimulus(){
 
-function showStim(){
+hideAll();
 
-document.getElementById("fixation").style.display="none";
 document.getElementById("stimulus").style.display="block";
 
-currentStim=stimOrder[stimIndex];
+currentStim = stimOrder[stimIndex];
 stimIndex++;
 
-document.getElementById("stimimg").src=stimuli[currentStim];
+document.getElementById("stimimg").src = stimuli[currentStim];
 
-correctButton=getCorrect(currentStim);
+correctButton = getCorrect(currentStim);
 
-phase="stimulus";
+phase = "stimulus";
+responded = false;
 
-responded=false;
+startTime = performance.now();
 
-startTime=performance.now();
+let respTime = (block=="practice") ? 3000 : 1200;
 
-let respTime=(block=="practice")?3000:1200;
-setTimeout(noResponse,respTime);
+setTimeout(noResponse, respTime);
 
 }
+
+/* ================= RULES ================= */
 
 function getCorrect(idx){
 
+/* EASY + PRACTICE */
 if(block=="easy" || block=="practice"){
-if(idx<=2) return 1;
-if(idx<=5) return 2;
-return 3;
+
+if(idx<=2) return 1;   // circles
+if(idx<=5) return 2;   // squares
+return 3;             // triangles
+
 }
 
+/* MEDIUM = Presentation exact */
 if(block=="medium"){
-let map=[1,2,3,2,3,1,3,1,2];
-return map[idx];
+
+/* base rule */
+let btn;
+
+if(idx<=2) btn = 1;       // circles
+else if(idx<=5) btn = 2;  // squares
+else btn = 3;             // triangles
+
+/* exceptions */
+if(idx==2) btn = 2;   // circle_blue
+if(idx==5) btn = 3;   // square_blue
+if(idx==8) btn = 1;   // triangle_blue
+
+return btn;
+
 }
 
+/* HARD = probabilistic */
 if(block=="hard"){
-if(idx<=2) return 1;
-if(idx<=5) return 2;
-return 3;
+
+let r = Math.random();
+
+/* circles */
+if(idx<=2){
+return (r<=0.80)?1:2;
+}
+
+/* squares */
+if(idx<=5){
+return (r<=0.80)?2:1;
+}
+
+/* triangles */
+return (r<=0.80)?3:2;
+
 }
 
 }
+
+/* ================= RESPONSE ================= */
 
 function handleResponse(key){
 
-phase="feedback";
+phase = "feedback";
 
-let rt = performance.now()-startTime;
+let rt = Math.round(performance.now() - startTime);
 
-let resp = (key=="1"||key=="2"||key=="3") ? parseInt(key) : 0;
+let resp =
+(key=="1" || key=="2" || key=="3")
+? parseInt(key)
+: 0;
 
 let acc = (resp==correctButton)?1:0;
-
-if(block=="hard"){
-let r=Math.random();
-if(r<0.2) acc=1-acc;
-}
 
 if(acc==1) score++;
 
 saveTrial(resp,acc,rt);
 
-document.getElementById("stimulus").style.display="none";
+hideAll();
 
+/* pre-feedback gap = 250 ms */
 setTimeout(()=>{
 
 document.getElementById("feedback").style.display="block";
-document.getElementById("feedback").innerText = acc?"Correct":"Incorrect";
+document.getElementById("feedback").innerText =
+acc ? "Correct" : "Incorrect";
 
+/* feedback duration = 750 ms */
 setTimeout(()=>{
 
 document.getElementById("feedback").style.display="none";
 
+/* ITI */
 let isi;
 
 if(block=="practice"){
-    isi = 800;
+isi = 800;
 }else{
-    isi = 600 + Math.random()*300;
+isi = 600 + Math.random()*300;
 }
 
 setTimeout(()=>{
+
 trial++;
 nextTrial();
+
 }, isi);
 
 },750);
@@ -269,84 +379,92 @@ nextTrial();
 }
 
 function noResponse(){
+
 if(phase!="stimulus") return;
+
 handleResponse(0);
+
 }
+
+/* ================= SAVE ================= */
 
 function saveTrial(resp,acc,rt){
 
-let stimName=stimuli[currentStim].split("/")[1];
+let stimName = stimuli[currentStim].split("/")[1];
+
 let shape = stimName.split("_")[0];
 let color = stimName.split("_")[1].replace(".bmp","");
 
 data.push({
-participant:participant,
-block:block,
-trial:trial,
-stimulus:currentStim+1,
-shape:shape,
-color:color,
-correct_button:correctButton,
-response:resp,
-accuracy:acc,
-rt:rt,
-feedback:acc,
-score:score
+
+participant: participant,
+block: block,
+trial: trial+1,
+stimulus: currentStim+1,
+shape: shape,
+color: color,
+correct_button: correctButton,
+response: resp,
+accuracy: acc,
+rt: rt,
+feedback: acc,
+score: score
+
 });
 
-// ===== BATCH SAVE =====
+/* batch every 5 */
 if(data.length % 5 === 0){
-saveData(data.slice(-5));  // send last 5 trials
+saveData(data.slice(-5));
 }
 
 }
+
+/* ================= SCORE ================= */
 
 function showScore(){
 
-phase="score";
+phase = "score";
 
-// save full block
 saveData(data);
 
-document.getElementById("feedback").style.display="none";
-document.getElementById("stimulus").style.display="none";
-document.getElementById("fixation").style.display="none";
+hideAll();
 
 document.getElementById("score").style.display="block";
 
-let acc=Math.round(score/totalTrials*100);
+let acc = Math.round(score/totalTrials*100);
 
-document.getElementById("score").innerHTML=
-"Block finished<br><br>"+
-"Score: "+score+" / "+totalTrials+"<br>"+
-"Accuracy: "+acc+"%<br><br>"+
+document.getElementById("score").innerHTML =
+
+"Block finished<br><br>" +
+"Score: " + score + " / " + totalTrials + "<br>" +
+"Accuracy: " + acc + "%<br><br>" +
 "Press SPACE";
 
-document.onkeydown=function(e){
-
-if(e.code=="Space"){
-
-if(block=="practice"){
-startNextBlock();
-}
-else if(blockIndex < blockOrder.length){
-startNextBlock();
-}
-else{
-endExperiment();
 }
 
-}
-
-}
-
-}
+/* ================= END ================= */
 
 function endExperiment(){
 
-document.getElementById("score").innerHTML=
+hideAll();
+
+document.getElementById("score").style.display="block";
+
+document.getElementById("score").innerHTML =
 "Finished<br><br>Saving data...";
 
 saveData(data);
+
+}
+
+/* ================= HELPERS ================= */
+
+function hideAll(){
+
+document.getElementById("instructions").style.display="none";
+document.getElementById("score").style.display="none";
+document.getElementById("feedback").style.display="none";
+document.getElementById("stimulus").style.display="none";
+document.getElementById("fixation").style.display="none";
 
 }
