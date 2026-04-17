@@ -165,7 +165,7 @@ function startEasy(){
 block = "easy";
 trial = 0;
 score = 0;
-totalTrials = 1;
+totalTrials = 135;
 
 makeStimOrder(totalTrials);
 nextTrial();
@@ -177,7 +177,7 @@ function startMedium(){
 block = "medium";
 trial = 0;
 score = 0;
-totalTrials = 20;
+totalTrials = 243;
 
 makeStimOrder(totalTrials);
 nextTrial();
@@ -189,7 +189,7 @@ function startHard(){
 block = "hard";
 trial = 0;
 score = 0;
-totalTrials = 1;
+totalTrials = 243;
 
 makeStimOrder(totalTrials);
 nextTrial();
