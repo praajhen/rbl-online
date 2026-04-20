@@ -5,82 +5,115 @@
 <title>Rule Based Learning</title>
 
 <style>
-body {
-background:black;
-color:white;
-font-family:Arial;
-text-align:center;
-margin:0;
-height:100vh;
-display:flex;
-justify-content:center;
-align-items:center;
+body{
+    background:black;
+    color:white;
+    font-family:Arial;
+    text-align:center;
+    margin:0;
+    height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
 }
 
-#instructions {
-font-size: 26px;
-line-height: 1.4;
+#instructions{
+    font-size:26px;
+    line-height:1.5;
+    width:100%;
 }
 
-#instructions h2 {
-font-size: 32px;
-margin-bottom: 15px;
+#instructions h2{
+    font-size:34px;
+    margin-bottom:15px;
 }
 
-#fixation {
-font-size: 48px;
+#fixation{
+    font-size:48px;
 }
 
-#feedback {
-font-size: 30px;
+#feedback{
+    font-size:30px;
 }
 
-#score {
-font-size: 28px;
+#score{
+    font-size:28px;
 }
 
-#stimulus img {
-width:320px;
+#stimulus img{
+    width:320px;
 }
 
-#instructions, #fixation, #stimulus, #feedback, #score {
-width:100%;
+#instructions,
+#fixation,
+#stimulus,
+#feedback,
+#score{
+    width:100%;
 }
 </style>
-
 </head>
 
 <body>
 
+<!-- =====================================================
+INITIAL SCREEN
+===================================================== -->
+
 <div id="instructions">
-<h2>Practice</h2>
+
+<h2>Practice Block</h2>
+
+<p>This block helps you learn the task.</p>
 
 <p>You will see shapes and colors.</p>
 
-<p>There is a rule that determines the correct category.
+<p>A rule determines the correct category.<br>
 Try to discover the rule using feedback.</p>
 
 <p>Press <b>1</b>, <b>2</b>, or <b>3</b> to respond.</p>
 
-<p>You will first complete a practice block,
+<p>You will first complete a practice block,<br>
 followed by three main blocks.</p>
 
-<p><b>Please do not close the browser until the task finishes.</b></p>
+<p>Please use a keyboard and keep the browser window active.</p>
+
+<p><b>Please do not close the browser until the task is finished.</b></p>
 
 <p>Press <b>SPACE</b> to begin.</p>
+
 </div>
 
-<div id="fixation" style="display:none;font-size:40px;">+</div>
+<!-- =====================================================
+FIXATION
+===================================================== -->
 
-<div id="stimulus" style="display:none">
-<img id="stimimg" width="300">
+<div id="fixation" style="display:none;">+</div>
+
+<!-- =====================================================
+STIMULUS
+===================================================== -->
+
+<div id="stimulus" style="display:none;">
+    <img id="stimimg" width="320">
 </div>
 
-<div id="feedback" style="display:none;font-size:30px;"></div>
+<!-- =====================================================
+FEEDBACK
+===================================================== -->
 
-<div id="score" style="display:none;font-size:30px;"></div>
+<div id="feedback" style="display:none;"></div>
 
-<!-- ✅ IMPORTANT: load save.js first -->
+<!-- =====================================================
+SCORE / BLOCK MESSAGE
+===================================================== -->
+
+<div id="score" style="display:none;"></div>
+
+<!-- =====================================================
+SCRIPTS
+===================================================== -->
+
 <script src="save.js"></script>
 <script src="task.js"></script>
 

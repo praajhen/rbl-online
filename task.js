@@ -70,7 +70,7 @@ handleResponse(e.key);
 return;
 }
 
-if(phase=="score" && e.code=="Space"){
+if((phase=="score" || phase=="blockstart" || phase=="mainstart") && e.code=="Space"){
 continueFlow();
 return;
 }
@@ -199,28 +199,68 @@ nextTrial();
 function startNextBlock(){
 
 let next = blockOrder[blockIndex];
-blockIndex++;
+let shownBlock = blockIndex + 1;
 
-if(next=="easy") startEasy();
-if(next=="medium") startMedium();
-if(next=="hard") startHard();
+hideAll();
+
+document.getElementById("score").style.display="block";
+
+document.getElementById("score").innerHTML =
+"Block " + shownBlock + " of 3<br><br>" +
+"Try to discover the rule using feedback.<br><br>" +
+"Press SPACE";
+
+phase = "blockstart";
+
+window.nextBlockName = next;
+
+blockIndex++;
 
 }
 
 /* ================= FLOW ================= */
 
-function continueFlow(){
 
-if(block=="practice"){
+function continueFlow(){
+ 
+    if(phase=="mainstart"){
 startNextBlock();
 return;
 }
 
+/* when block intro screen is shown */
+if(phase=="blockstart"){
+
+if(window.nextBlockName=="easy") startEasy();
+if(window.nextBlockName=="medium") startMedium();
+if(window.nextBlockName=="hard") startHard();
+
+return;
+}
+
+/* after practice finished screen */
+if(block=="practice"){
+
+hideAll();
+
+document.getElementById("score").style.display="block";
+
+document.getElementById("score").innerHTML =
+"Practice finished.<br><br>" +
+"The main task begins now.<br><br>" +
+"Press SPACE";
+
+phase = "mainstart";
+return;
+}
+
+/* after each completed block */
 if(blockIndex < blockOrder.length){
 startNextBlock();
 return;
 }
 
+/* finished all blocks */
 endExperiment();
 
 }
