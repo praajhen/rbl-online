@@ -285,19 +285,20 @@ return 3;             // triangles
 /* MEDIUM = Presentation exact */
 if(block=="medium"){
 
-/* base rule */
-let btn;
+/* circles */
+if(idx==0) return 1;   // circle_red
+if(idx==1) return 1;   // circle_green
+if(idx==2) return 2;   // circle_blue
 
-if(idx<=2) btn = 1;       // circles
-else if(idx<=5) btn = 2;  // squares
-else btn = 3;             // triangles
+/* squares */
+if(idx==3) return 2;   // square_red
+if(idx==4) return 2;   // square_green
+if(idx==5) return 3;   // square_blue
 
-/* exceptions */
-if(idx==2) btn = 2;   // circle_blue
-if(idx==5) btn = 3;   // square_blue
-if(idx==8) btn = 1;   // triangle_blue
-
-return btn;
+/* triangles */
+if(idx==6) return 3;   // triangle_red
+if(idx==7) return 3;   // triangle_green
+if(idx==8) return 1;   // triangle_blue
 
 }
 
